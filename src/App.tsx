@@ -5,23 +5,27 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RequireAuth from "./components/RequireAuth";
+import Tickets from "./pages/Tickets";
 
 function App() {
   return (
     <AuthContext>
-    <div>
+    <section className="max-w-[1440px] mx-auto">
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+
         {/* Protected routes */}
         <Route path="/" element={<RequireAuth />}>
          <Route path="dashboard" element={<Dashboard />} />
+         <Route path="tickets" element={<Tickets />} />
         </Route>
        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </section>
     </AuthContext>
   )
 }

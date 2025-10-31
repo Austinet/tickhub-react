@@ -1,10 +1,12 @@
-import { AiFillEye, AiFillEyeInvisible, AiOutlineCheck } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-// import cartImg from "../assets/images/cart.jpg";
+import dashboardBG from "../assets/images/illustration-hero.svg";
 import { useAuthContext } from "../context/AuthContext";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import Toast from "../components/Toast";
+import FormButton from "../components/FormButton";
 
 //Default values for user inputs and error checking
 const defaultUser = {
@@ -33,20 +35,30 @@ const Register = () => {
   const [passwordType, setPasswordType] = useState("password");
   const [newUserErrors, setNewUserErrors] = useState(defaultUserErrors);
   const { dispatch, usersDB } = useAuthContext();
-  const passwordView = useRef(null)
+  const passwordView = useRef<HTMLInputElement>(null!)
+  const navigate = useNavigate()
 
   const NAME_REGEX = /^[a-zA-Z][a-zA-Z]{2,}$/;
   const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
   const PHONE_REGEX = /^\d{11}$/;
 
   // Set form property values
-
   const setProperty = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUser({
       ...newUser,
       [e.target.name]: e.target.value.trim()
     })
   }
+
+  
+  //Toggles the password view from hidden to seen for the user
+  const togglePasswordView = () => {
+    if (passwordView.current.type === "password") {
+      setPasswordType("text")
+    } else {
+      setPasswordType("password")
+    }
+  } 
   
   //Validates user inputs and makes sign up requests
   const handleSubmit = (e: React.FormEvent) => {
@@ -105,37 +117,27 @@ const Register = () => {
 
     if (isFormValidated) {
       dispatch({ type: "ADD_USER", payload: newUser });
-      setSuccess(!success);
+      setSuccess(true);
     } else {
       return;
     }
-    console.log(newUser)
   };
-
-  //Toggles the password view from hidden to seen for the user
-  const togglePasswordView = () => {
-    if (passwordView.current.type === "password") {
-      setPasswordType("text")
-    } else {
-      setPasswordType("password")
-    }
-  } 
 
   return (
     <>
       <Header />
       <main>
         <section className="max-w-[1440px] mx-auto">
-          <div className="px-4 mx-auto my-10 lg:my-12 xl:flex gap-10">
-            <div className="bg-blue-600 xl:w-1/2 rounded-lg md:hidden xl:block">
-              {/* <img
-                src={cartImg}
-                className="w-full h-full rounded-lg"
-                alt="Cart background"
-              /> */}
+          <div className="px-4 mx-auto my-8 lg:my-12 xl:flex gap-10">
+            <div className="bg-blue-700 xl:w-1/2 rounded-lg md:hidden xl:block">
+              <img
+                src={dashboardBG}
+                className=" object-cover object-center"
+                alt="Dashboard background"
+              />
             </div>
             <div className="xl:w-1/2 py-2 md:pt-6">
-              <div className="mb-[1.5rem] lg:mb-[2rem]">
+              <div className="mb-6 lg:mb-8">
                 <h1 className="text-[1.7rem] text-[#000000d5] font-semibold">
                   Register
                 </h1>
@@ -254,14 +256,14 @@ const Register = () => {
                           value={newUser.password}
                           onChange={setProperty}
                           ref={passwordView}
-                          className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 pr-[3rem] outline-none focus:border-2"
+                          className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 pr-12 outline-none focus:border-2"
                           required
                         />
-                        <div className="absolute right-3 top-[0.62rem]" onClick={togglePasswordView}>
+                        <button className="absolute right-3 top-[0.62rem] outline-none" onClick={togglePasswordView}>
                         {
                           passwordType === "password" ? <AiFillEye className="text-3xl" /> :  <AiFillEyeInvisible className="text-3xl" />
                         }  
-                        </div>
+                        </button>
                       </div>
                       <span
                         className={`text-red-600 ${
@@ -287,14 +289,14 @@ const Register = () => {
                           value={newUser.confirmPassword}
                           onChange={setProperty}
                           ref={passwordView}
-                          className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 pr-[3rem] outline-none focus:border-2"
+                          className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 12 outline-none focus:border-2"
                           required
                         />
-                        <div className="absolute right-3 top-[0.62rem]" onClick={togglePasswordView}>
-                        {
+                          <button className="absolute right-3 top-[0.62rem] outline-none" onClick={togglePasswordView}>
+                             {
                           passwordType === "password" ? <AiFillEye className="text-3xl" /> :  <AiFillEyeInvisible className="text-3xl" />
                         } 
-                        </div>
+                          </button>            
                       </div>
                       <span
                         className={`text-red-600 ${
@@ -327,16 +329,13 @@ const Register = () => {
                         </Link>
                       </label>
                     </div>
-                    <span className="text-red-600 hidden">
+                    <span className={`text-red-600 ${
+                          newUserErrors.termsAndCondition ? "block" : "hidden"
+                        }`}>
                       Accept Terms, Privacy Policy and Conditions to continue
                     </span>
                   </div>
-                  <button
-                    type="submit"
-                    className="w-full py-3 text-lg md:text-xl text-center font-semibold bg-blue-600 text-white rounded-lg mt-[1.5rem] mb-2"
-                  >
-                    Create Account
-                  </button>
+                  <FormButton label="Create Account" />
                   <div className="text-center">
                     <p className="text-[1.125rem] text-[#000000d5] font-medium">
                       <span>Already have an account? </span>
@@ -351,24 +350,7 @@ const Register = () => {
           </div>
 
           {/* Successful registration overlay */}
-          <div
-            className={`${
-              success ? "" : "hidden"
-            } fixed bg-[#000000d7] w-full h-full top-0 left-0 flex items-center justify-center z-20`}
-          >
-            <div className="w-[90%] max-w-[500px] h-[300px] bg-white shadow-xl rounded-lg flex justify-center items-center flex-col text-center">
-              <AiOutlineCheck className="inline-block text-[3.5rem] md:text-[4.5rem] text-green-700" />
-              <h2 className="text-xl xl:text-2xl font-semibold mb-6">
-                Registered Successfully
-              </h2>
-              <Link
-                to={"/login"}
-                className="w-[250px] py-3 text-lg md:text-xl text-center font-semibold bg-blue-600 text-white rounded-lg "
-              >
-                Continue
-              </Link>
-            </div>
-          </div>
+          <Toast message="Registered Successfully" closeForm={()=> navigate('/login')} success={success}/>
         </section>
       </main>
       <Footer />

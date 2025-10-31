@@ -1,4 +1,5 @@
 import { MdOutlineDashboard, MdFlashAuto, MdInsertChart } from "react-icons/md";
+import Circle from "./Circle";
 
 const features = [
   {
@@ -26,7 +27,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section className=" bg-gray-50">
+    <section className=" bg-gray-50" id="features">
       <div className="max-w-[1440px] mx-auto px-4 py-10">
         {/* Feature header */}
         <div className="relative pb-10 md:my-10 text-center space-y-4 max-w-[600px] mx-auto text-gray-800">
@@ -39,7 +40,7 @@ const Features = () => {
           </p>
 
           {/* Circle */}
-        <div className="w-[50px] h-[50px] xl:w-[150px] xl:h-[150px] bg-blue-600 rounded-full absolute -top-[0.7rem] right-[1rem] lg:top-[1rem] lg:right-[-10rem] xl:right-[-17rem]"></div>
+          <Circle className="-top-[0.9rem] right-4 xl:-right-30 xl:top-8" />
         </div>
 
         {/* Features */}
@@ -64,16 +65,6 @@ const Features = () => {
             );
           })}
         </div>
-
-        {/* <div className="max-w-5xl mx-auto p-6">
-        <h2 className="text-2xl font-semibold">Features</h2>
-       <ul className="mt-4 grid sm:grid-cols-2 gap-4">
-        <li className="bg-white p-4 rounded shadow">Add & manage tickets</li>
-           <li className="bg-white p-4 rounded shadow">Edit status & assign priority</li>
-           <li className="bg-white p-4 rounded shadow">Simple persistent storage</li>
-          <li className="bg-white p-4 rounded shadow">Responsive UI</li>
-         </ul>
-      </div>  */}
       </div>
     </section>
   );

@@ -1,76 +1,60 @@
 import { useReducer, createContext, useContext } from "react";
-import { reducer, defaultValues } from "../utils/helpers";
-
-
-// Sets the default useReducer default values
-// const defaultValues = {
-//   ticket: [],
-//   ticketTotal: 0,
-//   isticketOpen: false,
-//   isModalOpen: false,
-//   modalMessage: "",
-//   usersDB : [],
-//   authenticatedUser: {} as User,
-//   isUserLoggedIn: false,
-// };
+import { reducer } from "../utils/helpers";
 
 type AuthProp = {
   children: React.ReactNode;
 };
 
 type User = {
-        firstName: string;
-        lastName: string;
-        email: string;
-        phoneNumber: string;
-        password: string;
-        confirmPassword: string;
-}
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  token?: string;
+};
 
 type MainContextProp = {
   dispatch: React.ActionDispatch<[action: any]>;
-  //  defaultValues : {
-  ticket: [];
-  ticketTotal: number;
-  isModalOpen: boolean;
-  modalMessage: string;
-  usersDB:
-     User[]
-    | null;
-  isUserLoggedIn: boolean;
-  authenticatedUser: User;
-  // };
+  ticketList: {
+    id: string;
+    title: string;
+    description: string;
+    status: "open" | "in_progress" | "closed";
+  }[];
+  usersDB: User[] | null;
+  authenticatedUser: User | null;
 };
 
 const MainContext = createContext<MainContextProp>({} as MainContextProp);
 
-const AuthContext = ({ children }: AuthProp) => {
-  const [state, dispatch] = useReducer(reducer, defaultValues);
+export default function AuthContext ({ children }: AuthProp) {
+  const data = {
+    ticketList: [],
+    usersDB: [],
+    authenticatedUser: null,
+  };
+
+  if (localStorage.getItem("defaultValues") === null) {
+    localStorage.setItem("defaultValues", JSON.stringify(data));
+  }
+
+  const defaultValues = localStorage.getItem("defaultValues");
+  const [state, dispatch] = useReducer(reducer, JSON.parse(defaultValues));
 
   return (
     <MainContext.Provider
       value={{
         dispatch,
-        ticket: state.ticket,
-        ticketTotal: state.ticketTotal,
-        isModalOpen: state.isModalOpen,
-        modalMessage: state.modalMessage,
+        ticketList: state.ticketList,
         usersDB: state.usersDB,
         authenticatedUser: state.authenticatedUser,
-        isUserLoggedIn: state.isUserLoggedIn,
       }}
     >
-      {/* <Routes>
-          <Route exact path="/" element={<Home />}></Route>
-          <Route path="/product/:id" element={<Product />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/register" element={<Register />}></Route>
-        </Routes> */}
       {children}
     </MainContext.Provider>
   );
 };
 
 export const useAuthContext = () => useContext(MainContext);
-
-export default AuthContext;

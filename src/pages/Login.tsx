@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useAuthContext } from "../context/AuthContext";
-// import cartImg from "../assets/images/cart.jpg";
-
+import dashboardBG from "../assets/images/illustration-hero.svg";
+import FormButton from "../components/FormButton";
 
 //Default values for user inputs and error checking
 const defaultDetails = {
@@ -23,21 +23,21 @@ const Login = () => {
   const [userLogin, setUserLogin] = useState(defaultDetails);
   const [userLoginErrors, setUserLoginErrors] = useState(defaultUserErrors);
   const [passwordType, setPasswordType] = useState("password");
-  const passwordView = useRef(null);
+  const passwordView = useRef<HTMLInputElement>(null!);
   const { dispatch, usersDB } = useAuthContext();
   const navigate = useNavigate();
 
+  // Set form property values
   const setProperty = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserLogin({
       ...userLogin,
-      [e.target.name]: e.target.value.trim()
-    })
-  }
+      [e.target.name]: e.target.value.trim(),
+    });
+  };
 
   //Validates user and makes login requests
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(userLogin)
 
     const authenticate = usersDB?.find(
       (user) => user.email === userLogin.email
@@ -46,8 +46,6 @@ const Login = () => {
     if (authenticate) {
       if (authenticate.password === userLogin.password) {
         dispatch({ type: "USER_LOGGED_IN", payload: userLogin });
-        alert("Successfully logged in");
-        
         navigate("/dashboard");
       } else {
         setUserLoginErrors({ ...userLoginErrors, password: true });
@@ -71,16 +69,16 @@ const Login = () => {
       <Header />
       <main>
         <section className="max-w-[1440px] mx-auto">
-          <div className="px-4 mx-auto my-10 lg:my-12 xl:flex gap-10">
-            <div className="bg-blue-600 xl:w-1/2 rounded-lg md:hidden xl:block">
-              {/* <img
-                src={cartImg}
-                className="w-full h-full rounded-lg"
-                alt="Cart background"
-              /> */}
+          <div className="px-4 mx-auto my-8 lg:my-12 xl:flex gap-10">
+            <div className="bg-blue-700 xl:w-1/2 rounded-lg md:hidden xl:block">
+              <img
+                src={dashboardBG}
+                className="object-cover object-center"
+                alt="Dashboard background"
+              />
             </div>
             <div className="xl:w-1/2 py-2 md:pt-6">
-              <div className="mb-[1.5rem] lg:mb-[2rem]">
+              <div className="mb-6 lg:mb-8">
                 <h1 className="text-[1.7rem] xl:text-[2rem] text-[#000000d5] font-semibold">
                   Login
                 </h1>
@@ -97,9 +95,9 @@ const Login = () => {
                       </label>
                       <input
                         type="email"
-                      name="email"
+                        name="email"
                         value={userLogin.email}
-                        onChange={setProperty}                       
+                        onChange={setProperty}
                         id="email"
                         className="border border-[#00000093] w-full h-[3.13rem] md: rounded-lg px-3 outline-none focus:border-2"
                         required
@@ -129,8 +127,8 @@ const Login = () => {
                           className="border border-[#00000093] w-full h-[3.13rem] rounded-lg px-3 outline-none focus:border-2"
                           required
                         />
-                        <div
-                          className="absolute right-3 top-[0.62rem]"
+                        <button
+                          className="absolute right-3 top-[0.62rem] outline-none"
                           onClick={togglePasswordView}
                         >
                           {passwordType === "password" ? (
@@ -138,7 +136,7 @@ const Login = () => {
                           ) : (
                             <AiFillEyeInvisible className="text-3xl" />
                           )}
-                        </div>
+                        </button>
                       </div>
                       <span
                         className={`text-red-600 ${
@@ -160,20 +158,15 @@ const Login = () => {
                             keepLoggedIn: e.currentTarget.checked,
                           })
                         }
-                        name="terms"
-                        id="terms"
+                        name="keep-logged-in"
+                        id="keep-logged-in"
                       />
                       <label htmlFor="terms" className="text-lg md:font-medium">
                         <span>Keep me logged in</span>
                       </label>
                     </div>
                   </div>
-                  <button
-                    type="submit"
-                    className="w-full py-3 text-lg md:text-xl text-center font-semibold bg-blue-600 text-white rounded-lg mt-[1.5rem] mb-2"
-                  >
-                    Login
-                  </button>
+                  <FormButton label="Login" />
                   <div className="text-center">
                     <p className="text-[1.125rem] text-[#000000d5] font-medium">
                       <span>Don&apos;t have an account? </span>
@@ -193,5 +186,4 @@ const Login = () => {
   );
 };
 
-
-export default Login
+export default Login;

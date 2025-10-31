@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import Circle from "./Circle";
 
 export default function Hero() {
   return (
-    <section className="relative">
-      <div className="my-10 md:mt-14 md:mb-0 px-4 text-center space-y-6 max-w-[700px] mx-auto text-gray-800">
+    <section>
+      <div className="relative my-10 md:mt-14 md:mb-0 px-4 text-center space-y-6 max-w-[700px] mx-auto text-gray-800">
         <h1 className="text-3xl md:text-5xl font-bold leading-tight">
           Ticket management simplified.
         </h1>
@@ -15,13 +16,13 @@ export default function Hero() {
         </p>
         <Link
           to={"/register"}
-          className="inline-block bg-[#0099ff] font-bold text-white text-[1.1rem] md:text-[1.3rem] px-[2.5rem] md:px-[4rem] py-4 rounded-2xl hover:opacity-90 lg:mt-2"
+          className="inline-block bg-blue-700 font-bold text-white text-[1.1rem] md:text-[1.3rem] px-10 md:px-16 py-4 md:py-5 rounded-2xl hover:opacity-90 lg:mt-2"
         >
           Get started
         </Link>
 
         {/* Circle */}
-        <div className="w-[50px] h-[50px] xl:w-[150px] xl:h-[150px] bg-blue-600 rounded-full absolute top-[15.5rem] left-[1rem] lg:top-[7rem] lg:left-[10rem]"></div>
+        <Circle className="left-6 bottom-12 lg:-left-40" />
       </div>
 
       {/* Wavy background */}
@@ -30,7 +31,7 @@ export default function Hero() {
           <path
             fill="#0099ff"
             fill-opacity="1"
-            d="M0,32L120,64C240,96,480,160,720,160C960,160,1200,96,1320,64L1440,32L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z"
+            d="M0,64L60,53.3C120,43,240,21,360,42.7C480,64,600,128,720,128C840,128,960,64,1080,74.7C1200,85,1320,171,1380,213.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
           ></path>
         </svg>
         <div className="h-[60px] w-full bg-[#0099ff] md:hidden"></div>
