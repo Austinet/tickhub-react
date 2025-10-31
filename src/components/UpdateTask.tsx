@@ -9,20 +9,21 @@ type AddTicketProp = {
     id: string;
     title: string;
     description: string;
-    status: 'open' | 'in_progress' | 'closed';
-  }
+    status: "open" | "in_progress" | "closed";
+  };
 };
 
 const resetTicket = {
+  id: "",
   title: "",
   description: "",
-  status: "",
+  status: "open",
 };
 
 const ticketErrors = {
   title: false,
   description: false,
-  status: false
+  status: false,
 };
 
 const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
@@ -36,11 +37,13 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
 
   // Set form property values
   const setProperty = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setNewTicket({
       ...newTicket,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -58,7 +61,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
     }
 
     if (!DESCRIPTION_REGEX.test(newTicket.description.trim())) {
-      console.log(newTicket.description)
+      console.log(newTicket.description);
       validateForm = { ...validateForm, description: true };
       isFormValidated = false;
     } else {
@@ -66,7 +69,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
     }
 
     if (!newTicket.status) {
-       validateForm = { ...validateForm, status: true };
+      validateForm = { ...validateForm, status: true };
       isFormValidated = false;
     } else {
       validateForm = { ...validateForm, status: false };
@@ -80,24 +83,28 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
     } else {
       return;
     }
-   
-    setNewTicket(resetTicket);
+
+    setNewTicket(
+      resetTicket as {
+        id: string;
+        title: string;
+        description: string;
+        status: "open" | "in_progress" | "closed";
+      }
+    );
   };
 
   const closeForm = () => {
-    setShowUpdateTicketForm(false)
-    setSuccess(false)
-  }
+    setShowUpdateTicketForm(false);
+    setSuccess(false);
+  };
 
   return (
     <section className="fixed flex justify-center items-center bg-[#000000cc] top-0 left-0 w-full min-h-screen p-4">
       <div className="w-full bg-white max-w-[700px] p-4 lg:p-8 rounded-lg shadow">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-medium">Update Ticket</h2>
-          <button
-            className="text-[1.5rem] outline-none"
-            onClick={closeForm}
-          >
+          <button className="text-[1.5rem] outline-none" onClick={closeForm}>
             <IoClose />
           </button>
         </div>
@@ -126,7 +133,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
               }`}
             >
               Please enter a valid title, Must be more than 5 characters,
-               beginning with a letter
+              beginning with a letter
             </span>
           </div>
 
@@ -151,7 +158,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
               }`}
             >
               Please enter a valid description, Must be more than 5 characters,
-               beginning with a letter
+              beginning with a letter
             </span>
           </div>
           <div className="mb-6">
@@ -191,8 +198,12 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
         </form>
       </div>
 
-           {/* Successful ticket creation overlay */}
-       <Toast success={success} message="Ticket Updated Successfully" closeForm={closeForm} />
+      {/* Successful ticket creation overlay */}
+      <Toast
+        success={success}
+        message="Ticket Updated Successfully"
+        closeForm={closeForm}
+      />
     </section>
   );
 };

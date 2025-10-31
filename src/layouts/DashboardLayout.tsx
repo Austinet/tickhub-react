@@ -15,7 +15,7 @@ type DashboardLayoutProps = {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { authenticatedUser, dispatch } = useAuthContext();
   const [openMenu, setOpenMenu] = useState(false);
-  const { firstName } = authenticatedUser;
+  // const { firstName,  } = authenticatedUser;
   const location = useLocation();
 
   const tabStyles = {
@@ -43,9 +43,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {/* User profile */}
         <div className="flex items-center gap-3">
-          <p className="text-lg font-medium">Welcome, {firstName}</p>
+          <p className="text-lg font-medium">Welcome, {authenticatedUser?.firstName}</p>
           <div className="hidden md:flex bg-blue-600 w-[50px] h-[50px] text-white rounded-full items-center justify-center">
-            <p className="text-lg font-medium">{firstName.charAt(0)}</p>
+            <p className="text-lg font-medium">{authenticatedUser?.firstName.charAt(0)}</p>
           </div>
           {/* Menu icon for mobile */}
           <button

@@ -24,7 +24,15 @@ type MainContextProp = {
     status: "open" | "in_progress" | "closed";
   }[];
   usersDB: User[] | null;
-  authenticatedUser: User | null;
+  authenticatedUser: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  token?: string;
+} | null;
 };
 
 const MainContext = createContext<MainContextProp>({} as MainContextProp);
@@ -40,8 +48,12 @@ export default function AuthContext ({ children }: AuthProp) {
     localStorage.setItem("defaultValues", JSON.stringify(data));
   }
 
-  const defaultValues = localStorage.getItem("defaultValues");
-  const [state, dispatch] = useReducer(reducer, JSON.parse(defaultValues));
+  let defaultValues
+  const items = localStorage.getItem("defaultValues");
+  if (items) {
+    defaultValues = JSON.parse(items)
+  }
+  const [state, dispatch] = useReducer(reducer, defaultValues);
 
   return (
     <MainContext.Provider

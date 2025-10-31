@@ -14,20 +14,16 @@ type TicketProp = {
   status: "open" | "closed" | "in_progress";
 };
 
-type StateProp = {
-  ticketList: TicketProp[],
-  usersDB: User[],
-  authenticatedUser: User | null,
-}
-
-type ActionProp = {
-  type: string,
-  payload?: User | TicketProp
-}
-
 //Performs operations based on different actions
-export const reducer = (state, action) => {
-  const storedItems = JSON.parse(localStorage.getItem("defaultValues"));
+export const reducer = (state: any, action: any) => {
+  const items = localStorage.getItem("defaultValues");
+  let storedItems;
+  // let storedItems = JSON.parse(localStorage.getItem("defaultValues"));
+  if (items !== null) {
+    storedItems = JSON.parse(items);
+  } else {
+    storedItems = { ticketList: [], usersDB: [], authenticatedUser: null };
+  }
 
   switch (action.type) {
     case "ADD_USER": {
@@ -44,12 +40,15 @@ export const reducer = (state, action) => {
         (user: User) => user.email === action.payload.email
       );
 
-      authenticatedUser.token = new Date().getTime().toString()
-      localStorage.setItem("ticketapp_session", JSON.stringify(authenticatedUser));
+      authenticatedUser.token = new Date().getTime().toString();
+      localStorage.setItem(
+        "ticketapp_session",
+        JSON.stringify(authenticatedUser)
+      );
 
       return {
         ...state,
-        authenticatedUser
+        authenticatedUser,
       };
     }
 
@@ -64,8 +63,8 @@ export const reducer = (state, action) => {
     }
 
     case "UPDATE_TICKET": {
-      const newTicketList = storedItems.ticketList.map(
-        (ticket: TicketProp) => (ticket.id === action.payload.id ? action.payload : ticket)
+      const newTicketList = storedItems.ticketList.map((ticket: TicketProp) =>
+        ticket.id === action.payload.id ? action.payload : ticket
       );
       storedItems.ticketList = [...newTicketList];
       localStorage.setItem("defaultValues", JSON.stringify(storedItems));
@@ -89,7 +88,10 @@ export const reducer = (state, action) => {
 
     case "LOG_OUT": {
       const authenticatedUser = null;
-      localStorage.setItem("ticketapp_session", JSON.stringify(authenticatedUser));
+      localStorage.setItem(
+        "ticketapp_session",
+        JSON.stringify(authenticatedUser)
+      );
 
       return {
         ...state,
