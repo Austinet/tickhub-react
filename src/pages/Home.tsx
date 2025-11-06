@@ -1,20 +1,18 @@
-import Header from "../components/Header";
-import Hero from "../components/Hero";
-import Features from "../components/Features";
-import Footer from "../components/Footer";
-
+import Hero from "../components/home/Hero";
+import Features from "../components/home/Features";
+import OnBoardingLayout from "../layouts/OnBoardingLayout";
 
 const Home = () => {
   return (
     <>
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-      </main>
-       <Footer />
+      <OnBoardingLayout>
+        <main>
+          <Hero />
+          <Features />
+        </main>
+      </OnBoardingLayout>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

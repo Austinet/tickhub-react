@@ -12,3 +12,17 @@
 button {
   cursor: pointer;
 }
+
+.circle {
+  animation: up-and-down 1s alternate infinite;
+}
+
+@keyframes up-and-down {
+  0% {
+    transform: translateY(10px);
+  }
+
+  100% {
+    transform: translateY(-10px);
+  }
+}

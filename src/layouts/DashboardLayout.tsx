@@ -15,7 +15,6 @@ type DashboardLayoutProps = {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { authenticatedUser, dispatch } = useAuthContext();
   const [openMenu, setOpenMenu] = useState(false);
-  // const { firstName,  } = authenticatedUser;
   const location = useLocation();
 
   const tabStyles = {
@@ -32,20 +31,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="max-w-[1440px] mx-auto relative">
       <header className="p-4 md:p-8 flex justify-between items-center">
         {/* Logo container */}
-        <Link to={"/"}>
-          <div className="flex items-center gap-[0.35rem] font-semibold text-[1.3rem] md:text-[1.4rem] ">
-            <FaTicketSimple className="text-indigo-600" />
-            <h2 className=" bg-linear-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-              TickHub
-            </h2>
-          </div>
-        </Link>
+        <div className="flex items-center gap-[0.35rem] font-semibold text-blue-700 text-[1.4rem] md:text-[1.5rem] ">
+          <FaTicketSimple />
+          <h2>TickHub</h2>
+        </div>
 
         {/* User profile */}
         <div className="flex items-center gap-3">
-          <p className="text-lg font-medium">Welcome, {authenticatedUser?.firstName}</p>
+          <p className="text-lg font-medium">
+            Welcome, {authenticatedUser?.user.firstName}
+          </p>
           <div className="hidden md:flex bg-blue-600 w-[50px] h-[50px] text-white rounded-full items-center justify-center">
-            <p className="text-lg font-medium">{authenticatedUser?.firstName.charAt(0)}</p>
+            <p className="text-lg font-medium">
+              {authenticatedUser?.user.firstName.charAt(0)}
+            </p>
           </div>
           {/* Menu icon for mobile */}
           <button

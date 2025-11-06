@@ -40,15 +40,20 @@ export const reducer = (state: any, action: any) => {
         (user: User) => user.email === action.payload.email
       );
 
-      authenticatedUser.token = new Date().getTime().toString();
       localStorage.setItem(
         "ticketapp_session",
-        JSON.stringify(authenticatedUser)
+        JSON.stringify({
+          user: authenticatedUser,
+          token: new Date().getTime().toString(),
+        })
       );
 
       return {
         ...state,
-        authenticatedUser,
+        authenticatedUser: {
+          user: authenticatedUser,
+          token: new Date().getTime().toString(),
+        },
       };
     }
 

@@ -40,7 +40,7 @@ const Features = () => {
           </p>
 
           {/* Circle */}
-          <Circle className="-top-[0.9rem] right-4 xl:-right-30 xl:top-8" />
+          <Circle className="-top-[0.9rem] right-4 xl:-right-50 xl:top-8" />
         </div>
 
         {/* Features */}
@@ -50,7 +50,7 @@ const Features = () => {
             return (
               <div
                 key={id}
-                className="space-y-3 bg-white px-4 py-7 rounded-2xl shadow max-w-[350px]"
+                className="space-y-3 bg-white px-4 py-7 rounded-2xl shadow max-w-[350px] hover:scale-110"
               >
                 <div>
                   {icon}

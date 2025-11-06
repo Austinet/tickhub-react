@@ -3,10 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import dashboardBG from "../assets/images/illustration-hero.svg";
 import { useAuthContext } from "../context/AuthContext";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
 import Toast from "../components/Toast";
 import FormButton from "../components/FormButton";
+import OnBoardingLayout from "../layouts/OnBoardingLayout";
 
 //Default values for user inputs and error checking
 const defaultUser = {
@@ -29,103 +28,94 @@ const defaultUserErrors = {
   termsAndCondition: false,
 };
 
-const Register = () => {
+export default function Register() {
   const [success, setSuccess] = useState(false);
   const [newUser, setNewUser] = useState(defaultUser);
   const [passwordType, setPasswordType] = useState("password");
   const [newUserErrors, setNewUserErrors] = useState(defaultUserErrors);
   const { dispatch, usersDB } = useAuthContext();
-  const passwordView = useRef<HTMLInputElement>(null!)
-  const navigate = useNavigate()
+  const passwordView = useRef<HTMLInputElement>(null!);
+  const navigate = useNavigate();
 
   const NAME_REGEX = /^[a-zA-Z][a-zA-Z]{2,}$/;
-  const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+  const PASSWORD_REGEX =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
   const PHONE_REGEX = /^\d{11}$/;
 
   // Set form property values
   const setProperty = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUser({
       ...newUser,
-      [e.target.name]: e.target.value.trim()
-    })
-  }
+      [e.target.id]: e.target.value.trim(),
+    });
+  };
 
-  
   //Toggles the password view from hidden to seen for the user
   const togglePasswordView = () => {
-    if (passwordView.current.type === "password") {
-      setPasswordType("text")
-    } else {
-      setPasswordType("password")
-    }
-  } 
-  
-  //Validates user inputs and makes sign up requests
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    let validateForm = defaultUserErrors;
-    let isFormValidated = true;
+    const type = passwordView.current.type === "password" ? "text" : "password";
+    setPasswordType(type);
+  };
 
-    if (!NAME_REGEX.test(newUser.firstName)) {
-      validateForm = { ...newUserErrors, firstName: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...newUserErrors, firstName: false };
-    }
+  //Validates user inputs fields
+  const validateField = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const field = e.target.id;
 
-    if (!NAME_REGEX.test(newUser.lastName)) {
-      validateForm = { ...validateForm, lastName: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, lastName: false };
-    }
-
-    if (usersDB?.some((users) => users.email === newUser.email)) {
-      validateForm = { ...validateForm, email: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, email: false };
-    }
-
-    if (!PHONE_REGEX.test(newUser.phoneNumber)) {
-      validateForm = { ...validateForm, phoneNumber: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, phoneNumber: false };
-    }
-
-    if (!PASSWORD_REGEX.test(newUser.password)) {
-      validateForm = { ...validateForm, password: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, password: false };
-    }
-
-    if (newUser.password !== newUser.confirmPassword) {
-      validateForm = { ...validateForm, confirmPassword: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, confirmPassword: false };
-    }
-
-    setNewUserErrors(validateForm);
-
-    if (usersDB?.some((users) => users.phoneNumber === newUser.phoneNumber)) {
-      alert("Phone number already used");
-      return;
-    }
-
-    if (isFormValidated) {
-      dispatch({ type: "ADD_USER", payload: newUser });
-      setSuccess(true);
-    } else {
-      return;
+    if (field === "firstName") {
+      const firstName = !NAME_REGEX.test(newUser.firstName);
+      setNewUserErrors({ ...newUserErrors, firstName });
+    } else if (field === "lastName") {
+      const lastName = !NAME_REGEX.test(newUser.lastName);
+      setNewUserErrors({ ...newUserErrors, lastName });
+    } else if (field === "phoneNumber") {
+      const phoneNumber = !PHONE_REGEX.test(newUser.phoneNumber);
+      setNewUserErrors({ ...newUserErrors, phoneNumber });
+    } else if (field === "email") {
+      const email = newUser.email.trim() ? false : true;
+      setNewUserErrors({ ...newUserErrors, email });
+    } else if (field === "password") {
+      const password = !PASSWORD_REGEX.test(newUser.password);
+      setNewUserErrors({ ...newUserErrors, password });
+    } else if (field === "confirmPassword") {
+      const confirmPassword =
+        newUser.confirmPassword === newUser.password ? false : true;
+      setNewUserErrors({ ...newUserErrors, confirmPassword });
     }
   };
 
+  function validateForm() {
+    return (
+      !newUserErrors.firstName &&
+      !newUserErrors.lastName &&
+      !newUserErrors.phoneNumber &&
+      !newUserErrors.email &&
+      !newUserErrors.password &&
+      !newUserErrors.confirmPassword
+    );
+  }
+
+  //Validates user inputs and makes sign up requests
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      if (usersDB?.some((users) => users.phoneNumber === newUser.phoneNumber)) {
+        alert("Phone number already used");
+        return;
+      }
+
+      if (usersDB?.some((users) => users.email === newUser.email)) {
+        alert("Email address already used");
+        return;
+      }
+
+      dispatch({ type: "ADD_USER", payload: newUser });
+      setSuccess(true);
+
+      // Reset
+      setNewUser(defaultUser);
+    }
+  };
   return (
-    <>
-      <Header />
+    <OnBoardingLayout>
       <main>
         <section className="max-w-[1440px] mx-auto">
           <div className="px-4 mx-auto my-8 lg:my-12 xl:flex gap-10">
@@ -141,7 +131,9 @@ const Register = () => {
                 <h1 className="text-[1.7rem] text-[#000000d5] font-semibold">
                   Register
                 </h1>
-                <p className="text-lg text-[#000000d5]">Sign up to get started</p>
+                <p className="text-lg text-[#000000d5]">
+                  Sign up to get started
+                </p>
               </div>
               <div>
                 <form onSubmit={handleSubmit}>
@@ -156,8 +148,11 @@ const Register = () => {
                       <input
                         type="text"
                         name="firstName"
+                        id="firstName"
                         value={newUser.firstName}
                         onChange={setProperty}
+                        onInput={validateField}
+                        onBlur={validateField}
                         className="border border-[#00000093] w-full h-[3.13rem] rounded-lg px-3 outline-none focus:border-2"
                         required
                       />
@@ -178,9 +173,11 @@ const Register = () => {
                       </label>
                       <input
                         type="text"
-                        name="lastName"
+                        id="lastName"
                         value={newUser.lastName}
                         onChange={setProperty}
+                        onInput={validateField}
+                        onBlur={validateField}
                         className="border border-[#00000093] w-full h-[3.13rem] rounded-lg px-3 outline-none focus:border-2"
                         required
                       />
@@ -203,9 +200,11 @@ const Register = () => {
                       </label>
                       <input
                         type="tel"
-                        name="phoneNumber"
+                        id="phoneNumber"
                         value={newUser.phoneNumber}
                         onChange={setProperty}
+                        onInput={validateField}
+                        onBlur={validateField}
                         className="border border-[#00000093] w-full h-[3.13rem] rounded-lg px-3 outline-none focus:border-2"
                         required
                       />
@@ -226,9 +225,11 @@ const Register = () => {
                       </label>
                       <input
                         type="email"
-                        name="email"
+                        id="email"
                         value={newUser.email}
                         onChange={setProperty}
+                        onInput={validateField}
+                        onBlur={validateField}
                         className="border border-[#00000093] w-full h-[3.13rem] rounded-lg px-3 outline-none focus:border-2"
                         required
                       />
@@ -237,7 +238,7 @@ const Register = () => {
                           newUserErrors.email ? "block" : "hidden"
                         }`}
                       >
-                        Email already used
+                        Enter a valid email address
                       </span>
                     </div>
                   </div>
@@ -252,17 +253,24 @@ const Register = () => {
                       <div className="relative">
                         <input
                           type={passwordType}
-                          name="password"
+                          id="password"
                           value={newUser.password}
                           onChange={setProperty}
+                          onInput={validateField}
+                          onBlur={validateField}
                           ref={passwordView}
                           className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 pr-12 outline-none focus:border-2"
                           required
                         />
-                        <button className="absolute right-3 top-[0.62rem] outline-none" onClick={togglePasswordView}>
-                        {
-                          passwordType === "password" ? <AiFillEye className="text-3xl" /> :  <AiFillEyeInvisible className="text-3xl" />
-                        }  
+                        <button
+                          className="absolute right-3 top-[0.62rem] outline-none"
+                          onClick={togglePasswordView}
+                        >
+                          {passwordType === "password" ? (
+                            <AiFillEye className="text-3xl" />
+                          ) : (
+                            <AiFillEyeInvisible className="text-3xl" />
+                          )}
                         </button>
                       </div>
                       <span
@@ -285,18 +293,25 @@ const Register = () => {
                       <div className="relative">
                         <input
                           type={passwordType}
-                          name="confirmPassword"
+                          id="confirmPassword"
                           value={newUser.confirmPassword}
                           onChange={setProperty}
+                          onInput={validateField}
+                          onBlur={validateField}
                           ref={passwordView}
                           className="border border-[#00000093] w-full h-[3.13rem] rounded-lg pl-3 12 outline-none focus:border-2"
                           required
                         />
-                          <button className="absolute right-3 top-[0.62rem] outline-none" onClick={togglePasswordView}>
-                             {
-                          passwordType === "password" ? <AiFillEye className="text-3xl" /> :  <AiFillEyeInvisible className="text-3xl" />
-                        } 
-                          </button>            
+                        <button
+                          className="absolute right-3 top-[0.62rem] outline-none"
+                          onClick={togglePasswordView}
+                        >
+                          {passwordType === "password" ? (
+                            <AiFillEye className="text-3xl" />
+                          ) : (
+                            <AiFillEyeInvisible className="text-3xl" />
+                          )}
+                        </button>
                       </div>
                       <span
                         className={`text-red-600 ${
@@ -311,6 +326,7 @@ const Register = () => {
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
+                        id="terms"
                         checked={newUser.termsAndCondition}
                         onChange={(e) =>
                           setNewUser({
@@ -318,6 +334,7 @@ const Register = () => {
                             termsAndCondition: e.currentTarget.checked,
                           })
                         }
+                        required
                       />
                       <label
                         htmlFor="terms"
@@ -329,9 +346,11 @@ const Register = () => {
                         </Link>
                       </label>
                     </div>
-                    <span className={`text-red-600 ${
-                          newUserErrors.termsAndCondition ? "block" : "hidden"
-                        }`}>
+                    <span
+                      className={`text-red-600 ${
+                        newUserErrors.termsAndCondition ? "block" : "hidden"
+                      }`}
+                    >
                       Accept Terms, Privacy Policy and Conditions to continue
                     </span>
                   </div>
@@ -350,12 +369,13 @@ const Register = () => {
           </div>
 
           {/* Successful registration overlay */}
-          <Toast message="Registered Successfully" closeForm={()=> navigate('/login')} success={success}/>
+          <Toast
+            message="Registered Successfully"
+            closeForm={() => navigate("/login")}
+            success={success}
+          />
         </section>
       </main>
-      <Footer />
-    </>
+    </OnBoardingLayout>
   );
-};
-
-export default Register;
+}

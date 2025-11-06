@@ -25,14 +25,12 @@ const Header = () => {
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
-    <header className="max-w-[1440px] mx-auto px-4 py-4 relative flex justify-between items-center lg:px-6 lg:py-7">
+    <header className="max-w-[1440px] mx-auto px-4 py-4 relative flex justify-between items-center lg:px-6 lg:py-7 shadow">
       {/* Logo container */}
       <Link to={"/"}>
-        <div className="flex items-center gap-[0.35rem] font-semibold text-[1.4rem] ">
-          <FaTicketSimple className="text-indigo-600" />
-          <h2 className=" bg-linear-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-            TickHub
-          </h2>
+        <div className="flex items-center gap-[0.35rem] font-semibold text-[1.4rem] text-blue-700">
+          <FaTicketSimple />
+          <h2>TickHub</h2>
         </div>
       </Link>
 
@@ -41,7 +39,7 @@ const Header = () => {
         <nav
           className={`absolute left-0 lg:static space-y-6 ${
             openMenu ? "top-16" : "-top-80"
-          } bg-white z-20 px-4 pb-[1.2rem] w-full lg:p-0 lg:w-fit lg:flex lg:items-center lg:space-y-0 lg:gap-16 shadow-lg lg:shadow-none`}
+          } bg-white z-20 px-4 pb-6 w-full lg:p-0 lg:w-fit lg:flex lg:items-center lg:space-y-0 lg:gap-16 shadow-md lg:shadow-none`}
         >
           <ul className="flex flex-col gap-5 lg:flex-row lg:items-center lg:gap-16">
             {navLinks.map((link) => {

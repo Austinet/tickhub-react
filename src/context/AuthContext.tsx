@@ -25,19 +25,21 @@ type MainContextProp = {
   }[];
   usersDB: User[] | null;
   authenticatedUser: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  confirmPassword: string;
-  token?: string;
-} | null;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+      password: string;
+      confirmPassword: string;
+    };
+    token?: string;
+  } | null;
 };
 
 const MainContext = createContext<MainContextProp>({} as MainContextProp);
 
-export default function AuthContext ({ children }: AuthProp) {
+export default function AuthContext({ children }: AuthProp) {
   const data = {
     ticketList: [],
     usersDB: [],
@@ -48,10 +50,10 @@ export default function AuthContext ({ children }: AuthProp) {
     localStorage.setItem("defaultValues", JSON.stringify(data));
   }
 
-  let defaultValues
+  let defaultValues;
   const items = localStorage.getItem("defaultValues");
   if (items) {
-    defaultValues = JSON.parse(items)
+    defaultValues = JSON.parse(items);
   }
   const [state, dispatch] = useReducer(reducer, defaultValues);
 
@@ -67,6 +69,6 @@ export default function AuthContext ({ children }: AuthProp) {
       {children}
     </MainContext.Provider>
   );
-};
+}
 
 export const useAuthContext = () => useContext(MainContext);

@@ -1,11 +1,10 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useAuthContext } from "../context/AuthContext";
 import dashboardBG from "../assets/images/illustration-hero.svg";
 import FormButton from "../components/FormButton";
+import OnBoardingLayout from "../layouts/OnBoardingLayout";
 
 //Default values for user inputs and error checking
 const defaultDetails = {
@@ -57,16 +56,12 @@ const Login = () => {
 
   //Toggles the password view from hidden to seen for the user
   const togglePasswordView = () => {
-    if (passwordView.current.type === "password") {
-      setPasswordType("text");
-    } else {
-      setPasswordType("password");
-    }
+    const type = passwordView.current.type === "password" ? "text" : "password";
+    setPasswordType(type);
   };
 
   return (
-    <>
-      <Header />
+    <OnBoardingLayout>
       <main>
         <section className="max-w-[1440px] mx-auto">
           <div className="px-4 mx-auto my-8 lg:my-12 xl:flex gap-10">
@@ -181,8 +176,7 @@ const Login = () => {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
+    </OnBoardingLayout>
   );
 };
 
