@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import Ticket from "../components/Ticket";
+import Ticket from "../components/dashboard/Ticket";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AddTicket from "../components/AddTicket";
 import { useAuthContext } from "../context/AuthContext";
-import UpdateTicket from "../components/UpdateTask";
-import ViewTicket from "../components/ViewTicket";
+import ViewTicket from "../components/dashboard/ViewTicket";
 import { FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 type TicketProp = {
   id: string;
@@ -17,8 +16,6 @@ type TicketProp = {
 type TicketArrayProp = TicketProp[] | [];
 
 const Tickets = () => {
-  const [showAddTicketForm, setShowAddTicketForm] = useState(false);
-  const [showUpdateTicketForm, setShowUpdateTicketForm] = useState(false);
   const [showViewTicketForm, setShowViewTicketForm] = useState(false);
   const [ticket, setTicket] = useState({} as TicketProp);
   const { dispatch, ticketList } = useAuthContext();
@@ -26,11 +23,6 @@ const Tickets = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [filteredTickets, setFilteredTickets] = useState([] as TicketArrayProp);
-
-  const updateTicket = (ticket: TicketProp) => {
-    setTicket(ticket);
-    setShowUpdateTicketForm(true);
-  };
 
   const viewTicket = (ticket: TicketProp) => {
     setTicket(ticket);
@@ -72,13 +64,13 @@ const Tickets = () => {
               Manage and track all your tickets
             </p>
           </div>
-          <button
-            onClick={() => setShowAddTicketForm(true)}
+          <Link
+            to={"/tickets/add"}
             className=" bg-blue-800 text-white w-fit px-[1.1rem] py-[0.8rem] md:px-[1.3rem] md:py-4 rounded-[5px] outline-none flex items-center gap-2 text-[1.3rem] font-medium hover:opacity-90"
           >
             <span>+</span>
             <span>Add Ticket</span>
-          </button>
+          </Link>
         </div>
 
         {/* Search and filter features  */}
@@ -97,7 +89,7 @@ const Tickets = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-white border p-[0.9rem] rounded w-[120px] focus:outline focus:outline-blue-400 text-[1.1rem]"
+              className="bg-white border p-[0.9rem] rounded w-[150px] focus:outline focus:outline-blue-400 text-[1.1rem]"
             >
               <option value="all">All</option>
               <option value="open">Open</option>
@@ -118,7 +110,6 @@ const Tickets = () => {
                   key={ticket.id}
                   ticket={ticket}
                   deleteTicket={deleteTicket}
-                  updateTicket={updateTicket}
                   viewTicket={viewTicket}
                 />
               );
@@ -126,24 +117,11 @@ const Tickets = () => {
           </div>
         )}
 
-        {/* Add Ticket Form */}
-        {showAddTicketForm && (
-          <AddTicket setShowAddTicketForm={setShowAddTicketForm} />
-        )}
-
         {/* View Ticket Form */}
         {showViewTicketForm && (
           <ViewTicket
             ticket={ticket}
             setShowViewTicketForm={setShowViewTicketForm}
-          />
-        )}
-
-        {/* Update Ticket Form */}
-        {showUpdateTicketForm && (
-          <UpdateTicket
-            ticket={ticket}
-            setShowUpdateTicketForm={setShowUpdateTicketForm}
           />
         )}
       </section>

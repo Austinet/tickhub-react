@@ -50,20 +50,24 @@ export default function AuthContext({ children }: AuthProp) {
     localStorage.setItem("defaultValues", JSON.stringify(data));
   }
 
-  let defaultValues;
+  let defaultValues, authUser;
   const items = localStorage.getItem("defaultValues");
   if (items) {
     defaultValues = JSON.parse(items);
   }
   const [state, dispatch] = useReducer(reducer, defaultValues);
 
+  const session = localStorage.getItem("ticketapp_session");
+  if (session) {
+    authUser = JSON.parse(session);
+  }
   return (
     <MainContext.Provider
       value={{
         dispatch,
         ticketList: state.ticketList,
         usersDB: state.usersDB,
-        authenticatedUser: state.authenticatedUser,
+        authenticatedUser: authUser,
       }}
     >
       {children}

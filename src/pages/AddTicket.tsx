@@ -1,23 +1,14 @@
 import { useState } from "react";
+import DashboardLayout from "../layouts/DashboardLayout";
+import { Link, useNavigate } from "react-router-dom";
+import Toast from "../components/Toast";
+import { FaCaretLeft } from "react-icons/fa6";
 import { useAuthContext } from "../context/AuthContext";
-import { IoClose } from "react-icons/io5";
-import Toast from "./Toast";
-
-type AddTicketProp = {
-  setShowUpdateTicketForm: React.Dispatch<React.SetStateAction<boolean>>;
-  ticket: {
-    id: string;
-    title: string;
-    description: string;
-    status: "open" | "in_progress" | "closed";
-  };
-};
 
 const resetTicket = {
-  id: "",
   title: "",
   description: "",
-  status: "open",
+  status: "",
 };
 
 const ticketErrors = {
@@ -26,14 +17,16 @@ const ticketErrors = {
   status: false,
 };
 
-const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
+const AddTicket = () => {
+  const navigate = useNavigate();
+
   const { dispatch } = useAuthContext();
-  const [newTicket, setNewTicket] = useState(ticket);
+  const [newTicket, setNewTicket] = useState(resetTicket);
   const [newTicketErrors, setNewTicketErrors] = useState(ticketErrors);
   const [success, setSuccess] = useState(false);
 
-  const TITLE_REGEX = /^[a-zA-Z][a-zA-Z0-9]{5,}$/;
-  const DESCRIPTION_REGEX = /^[a-zA-Z][a-zA-Z0-9]{5,}$/;
+  const TITLE_REGEX = /^(?=.*[A-Za-z])[A-Za-z0-9\s.,!?'’"()\-:]{5,100}$/;
+  const DESCRIPTION_REGEX = /^(?=.*[A-Za-z])[\w\s.,!?'"@#%&()\-:;/]{10,500}$/;
 
   // Set form property values
   const setProperty = (
@@ -43,70 +36,73 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
   ) => {
     setNewTicket({
       ...newTicket,
-      [e.target.name]: e.target.value,
+      [e.target.id]: e.target.value,
     });
   };
+
+  const setStatusProperty = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProperty(e);
+  };
+
+  //Validates input fields
+  const validateField = (field: string) => {
+    if (field === "title") {
+      const title = !TITLE_REGEX.test(newTicket.title);
+      setNewTicketErrors({ ...newTicketErrors, title });
+    } else if (field === "description") {
+      const description = !DESCRIPTION_REGEX.test(newTicket.description);
+      setNewTicketErrors({ ...newTicketErrors, description });
+    } else if (field === "status") {
+      const status = ["open", "in_progress", "closed"].includes(
+        newTicket.status
+      );
+      console.log(status);
+      setNewTicketErrors({ ...newTicketErrors, status });
+    }
+  };
+
+  function validateForm() {
+    return (
+      !newTicketErrors.title &&
+      !newTicketErrors.description &&
+      !newTicketErrors.status
+    );
+  }
 
   // Add Ticket
   const addTicket = (e: React.FormEvent) => {
     e.preventDefault();
-    let validateForm = newTicketErrors;
-    let isFormValidated = true;
 
-    if (!TITLE_REGEX.test(newTicket.title.trim())) {
-      validateForm = { ...newTicketErrors, title: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...newTicketErrors, title: false };
-    }
-
-    if (!DESCRIPTION_REGEX.test(newTicket.description.trim())) {
-      console.log(newTicket.description);
-      validateForm = { ...validateForm, description: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, description: false };
-    }
-
-    if (!newTicket.status) {
-      validateForm = { ...validateForm, status: true };
-      isFormValidated = false;
-    } else {
-      validateForm = { ...validateForm, status: false };
-    }
-
-    setNewTicketErrors(validateForm);
-
-    if (isFormValidated) {
-      dispatch({ type: "UPDATE_TICKET", payload: newTicket });
+    if (validateForm()) {
+      dispatch({
+        type: "ADD_TICKET",
+        payload: { id: new Date().getTime().toString(), ...newTicket },
+      });
       setSuccess(true);
+
+      // Reset
+      setNewTicket(resetTicket);
     } else {
       return;
     }
-
-    setNewTicket(
-      resetTicket as {
-        id: string;
-        title: string;
-        description: string;
-        status: "open" | "in_progress" | "closed";
-      }
-    );
   };
 
   const closeForm = () => {
-    setShowUpdateTicketForm(false);
-    setSuccess(false);
+    setSuccess(success);
+    navigate("/tickets");
   };
 
   return (
-    <section className="fixed flex justify-center items-center bg-[#000000cc] top-0 left-0 w-full min-h-screen p-4">
-      <div className="w-full bg-white max-w-[700px] p-4 lg:p-8 rounded-lg shadow">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-medium">Update Ticket</h2>
-          <button className="text-[1.5rem] outline-none" onClick={closeForm}>
-            <IoClose />
-          </button>
+    <DashboardLayout>
+      <section className="w-full bg-white max-w-[700px] p-4 lg:p-8 rounded-lg shadow">
+        <div className="mb-8">
+          <Link
+            to="/tickets"
+            className="text-lg flex items-center gap-1 hover:text-slate-500"
+          >
+            <FaCaretLeft /> <span>Go back</span>
+          </Link>
+          <h2 className="text-2xl font-medium mt-4">Create New Ticket</h2>
         </div>
 
         <form onSubmit={addTicket}>
@@ -121,10 +117,12 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
               type="text"
               name="title"
               id="title"
-              className="w-full p-[0.9rem] border rounded text-[1.1rem] outline-none"
-              placeholder="Enter ticket title"
               value={newTicket.title}
               onChange={setProperty}
+              onInput={() => validateField("title")}
+              onBlur={() => validateField("title")}
+              className="w-full p-[0.9rem] border rounded text-[1.1rem] outline-none"
+              placeholder="Enter ticket title"
               required
             />
             <span
@@ -146,10 +144,13 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
             </label>
             <textarea
               name="description"
-              placeholder="Enter task description"
-              required
+              id="description"
               value={newTicket.description}
               onChange={setProperty}
+              onInput={() => validateField("description")}
+              onBlur={() => validateField("description")}
+              placeholder="Enter task description"
+              required
               className="w-full h-[90px] p-[0.9rem] border rounded text-[1.1rem] outline-none resize-none"
             ></textarea>
             <span
@@ -157,7 +158,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
                 newTicketErrors.description ? "block" : "hidden"
               }`}
             >
-              Please enter a valid description, Must be more than 5 characters,
+              Please enter a valid description, Must be more than 10 characters,
               beginning with a letter
             </span>
           </div>
@@ -172,7 +173,7 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
               name="status"
               id="status"
               value={newTicket.status}
-              onChange={setProperty}
+              onChange={setStatusProperty}
               required
               className="w-full p-[0.9rem] border rounded text-[1.1rem] outline-none"
             >
@@ -191,21 +192,21 @@ const UpdateTicket = ({ setShowUpdateTicketForm, ticket }: AddTicketProp) => {
           </div>
           <button
             type="submit"
-            className="w-full py-4 px-6 rounded bg-blue-800 text-white outline-none text-[1.2rem] font-medium mt-2 hover:opacity-90"
+            className="w-full py-4 px-6 rounded bg-blue-800 text-white outline-none text-[1.2rem] font-medium mt-2  hover:opacity-90"
           >
             Save Ticket
           </button>
         </form>
-      </div>
 
-      {/* Successful ticket creation overlay */}
-      <Toast
-        success={success}
-        message="Ticket Updated Successfully"
-        closeForm={closeForm}
-      />
-    </section>
+        {/* Successful ticket creation overlay */}
+        <Toast
+          success={success}
+          message="Ticket Added Successfully"
+          closeForm={closeForm}
+        />
+      </section>
+    </DashboardLayout>
   );
 };
 
-export default UpdateTicket;
+export default AddTicket;
